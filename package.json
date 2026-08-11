@@ -1,0 +1,30 @@
+{
+  "name": "shopify-lookbook-feature",
+  "version": "1.0.0",
+  "description": "Shopify lookbook feature using native metaobjects, Storefront API, and React — technical assessment for Convert",
+  "main": "index.js",
+  "scripts": {
+    "build": "node build.js",
+    "watch": "node build.js --watch",
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/carloparcodev-commits/shopify-lookbook-feature.git"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "type": "commonjs",
+  "bugs": {
+    "url": "https://github.com/carloparcodev-commits/shopify-lookbook-feature/issues"
+  },
+  "homepage": "https://github.com/carloparcodev-commits/shopify-lookbook-feature#readme",
+  "dependencies": {
+    "react": "^19.2.8",
+    "react-dom": "^19.2.8"
+  },
+  "devDependencies": {
+    "esbuild": "^0.28.2"
+  }
+}
