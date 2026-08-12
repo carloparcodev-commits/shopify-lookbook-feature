@@ -6,7 +6,8 @@ import LookbookGrid from './components/LookbookGrid';
  * Orchestrates lookbook rendering for homepage and product pages.
  *
  * Home mode: render lookbooks passed from Liquid (merchant-selected).
- * Product mode: filter lookbooks that contain the current product, max 2.
+ * Product mode: filter lookbooks that contain the current product (max 2),
+ * and exclude the current product from the grid (shop-the-look UX).
  */
 export default function LookbookApp({ config }) {
   const [lookbooks, setLookbooks] = useState([]);
@@ -30,8 +31,18 @@ export default function LookbookApp({ config }) {
           return;
         }
 
+        const currentHandle =
+          config.mode === 'product'
+            ? (config.productHandle || '').toLowerCase()
+            : '';
+
         const allHandles = unique(
-          selected.flatMap((lookbook) => lookbook.productHandles || [])
+          selected
+            .flatMap((lookbook) => lookbook.productHandles || [])
+            .filter(
+              (handle) =>
+                !currentHandle || String(handle).toLowerCase() !== currentHandle
+            )
         );
 
         const productsByHandle = await fetchProductsByHandles({
@@ -42,12 +53,18 @@ export default function LookbookApp({ config }) {
           apiVersion: config.apiVersion,
         });
 
-        const hydrated = selected.map((lookbook) => ({
-          ...lookbook,
-          products: (lookbook.productHandles || [])
-            .map((handle) => productsByHandle[handle])
-            .filter(Boolean),
-        }));
+        const hydrated = selected
+          .map((lookbook) => ({
+            ...lookbook,
+            products: (lookbook.productHandles || [])
+              .filter(
+                (handle) =>
+                  !currentHandle || String(handle).toLowerCase() !== currentHandle
+              )
+              .map((handle) => productsByHandle[handle])
+              .filter(Boolean),
+          }))
+          .filter((lookbook) => lookbook.products.length > 0);
 
         if (!cancelled) {
           setLookbooks(hydrated);
