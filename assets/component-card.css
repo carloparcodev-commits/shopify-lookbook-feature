@@ -102,6 +102,7 @@
 
 .card .media {
   width: 100%;
+  background-color: #ffffff;
 }
 
 .card__media {
@@ -291,7 +292,7 @@
 
 .card__media .media img {
   height: 100%;
-  object-fit: cover;
+  object-fit: contain;
   object-position: center center;
   width: 100%;
 }
