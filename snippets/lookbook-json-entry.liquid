@@ -1,0 +1,36 @@
+{%- comment -%}
+  Serialize one lookbook metaobject entry as JSON for the React mount.
+  Expects metaobject fields: title, description, products (list of product refs or handles).
+{%- endcomment -%}
+
+{%- liquid
+  assign lookbook_title = lookbook.title.value | default: lookbook.title
+  assign lookbook_description = lookbook.description.value | default: lookbook.description
+  assign lookbook_handle = lookbook.system.handle
+  assign product_list = lookbook.products.value | default: lookbook.products
+-%}
+
+{
+  "handle": {{ lookbook_handle | json }},
+  "title": {{ lookbook_title | json }},
+  "description": {{ lookbook_description | json }},
+  "productHandles": [
+    {%- if product_list != blank -%}
+      {%- assign handle_index = 0 -%}
+      {%- for item in product_list -%}
+        {%- liquid
+          if item.handle != blank
+            assign product_handle_value = item.handle
+          else
+            assign product_handle_value = item
+          endif
+        -%}
+        {%- if product_handle_value != blank -%}
+          {%- if handle_index > 0 -%},{%- endif -%}
+          {{ product_handle_value | json }}
+          {%- assign handle_index = handle_index | plus: 1 -%}
+        {%- endif -%}
+      {%- endfor -%}
+    {%- endif -%}
+  ]
+}
