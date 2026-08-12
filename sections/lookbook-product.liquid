@@ -1,0 +1,152 @@
+{%- liquid
+  assign lookbooks_payload = '[]'
+  assign max_lookbooks = 2
+  assign matched_count = 0
+  assign current_handle = product.handle
+-%}
+
+{%- capture lookbooks_payload -%}
+[
+{%- if current_handle != blank -%}
+  {%- for lookbook_entry in metaobjects.lookbook.values -%}
+    {%- liquid
+      assign contains_product = false
+      assign product_list = lookbook_entry.products.value | default: lookbook_entry.products
+    -%}
+    {%- if product_list != blank -%}
+      {%- for item in product_list -%}
+        {%- liquid
+          if item.handle != blank
+            assign item_handle = item.handle
+          else
+            assign item_handle = item
+          endif
+        -%}
+        {%- if item_handle == current_handle -%}
+          {%- assign contains_product = true -%}
+          {%- break -%}
+        {%- endif -%}
+      {%- endfor -%}
+    {%- endif -%}
+
+    {%- if contains_product -%}
+      {%- if matched_count > 0 -%},{%- endif -%}
+      {%- render 'lookbook-json-entry', lookbook: lookbook_entry -%}
+      {%- assign matched_count = matched_count | plus: 1 -%}
+      {%- if matched_count >= max_lookbooks -%}
+        {%- break -%}
+      {%- endif -%}
+    {%- endif -%}
+  {%- endfor -%}
+{%- endif -%}
+]
+{%- endcapture -%}
+
+{% render 'lookbook',
+  lookbook_mode: 'product',
+  lookbooks_payload: lookbooks_payload,
+  product_handle: current_handle
+%}
+
+{% schema %}
+{
+  "name": "Lookbook (product)",
+  "tag": "section",
+  "class": "section",
+  "settings": [
+    {
+      "type": "paragraph",
+      "content": "Shows lookbooks that include this product (maximum of 2). Lookbook selection is automatic — there is no picker. Other settings match the homepage Lookbook section."
+    },
+    {
+      "type": "inline_richtext",
+      "id": "heading",
+      "label": "Heading",
+      "default": "Shop the look"
+    },
+    {
+      "type": "select",
+      "id": "heading_size",
+      "options": [
+        { "value": "h2", "label": "Small" },
+        { "value": "h1", "label": "Medium" },
+        { "value": "h0", "label": "Large" },
+        { "value": "hxl", "label": "Extra large" },
+        { "value": "hxxl", "label": "Extra extra large" }
+      ],
+      "default": "h1",
+      "label": "Heading size"
+    },
+    {
+      "type": "range",
+      "id": "columns_desktop",
+      "min": 1,
+      "max": 6,
+      "step": 1,
+      "default": 4,
+      "label": "Columns on desktop"
+    },
+    {
+      "type": "select",
+      "id": "columns_mobile",
+      "default": "2",
+      "label": "Columns on mobile",
+      "options": [
+        { "value": "1", "label": "1" },
+        { "value": "2", "label": "2" }
+      ]
+    },
+    {
+      "type": "color_scheme",
+      "id": "color_scheme",
+      "label": "Color scheme",
+      "info": "Cards use the theme card color scheme.",
+      "default": "scheme-1"
+    },
+    {
+      "type": "header",
+      "content": "Product cards"
+    },
+    {
+      "type": "select",
+      "id": "image_ratio",
+      "options": [
+        { "value": "adapt", "label": "Adapt to image" },
+        { "value": "portrait", "label": "Portrait" },
+        { "value": "square", "label": "Square" }
+      ],
+      "default": "adapt",
+      "label": "Image ratio"
+    },
+    {
+      "type": "header",
+      "content": "Section padding"
+    },
+    {
+      "type": "range",
+      "id": "padding_top",
+      "min": 0,
+      "max": 100,
+      "step": 4,
+      "unit": "px",
+      "label": "Top padding",
+      "default": 36
+    },
+    {
+      "type": "range",
+      "id": "padding_bottom",
+      "min": 0,
+      "max": 100,
+      "step": 4,
+      "unit": "px",
+      "label": "Bottom padding",
+      "default": 36
+    }
+  ],
+  "presets": [
+    {
+      "name": "Lookbook (product)"
+    }
+  ]
+}
+{% endschema %}
