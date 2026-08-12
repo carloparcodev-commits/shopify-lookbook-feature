@@ -68,11 +68,11 @@ export default function LookbookApp({ config }) {
   }, [config]);
 
   if (loading) {
-    return <div className="lookbook lookbook--loading">Loading lookbook…</div>;
+    return <p className="caption">Loading lookbook…</p>;
   }
 
   if (error) {
-    return <div className="lookbook lookbook--error">{error}</div>;
+    return <p className="caption">{error}</p>;
   }
 
   if (!lookbooks.length) {
@@ -86,6 +86,11 @@ export default function LookbookApp({ config }) {
           key={lookbook.handle || lookbook.title}
           lookbook={lookbook}
           currency={config.currency}
+          columnsDesktop={config.columnsDesktop}
+          columnsMobile={config.columnsMobile}
+          cardStyle={config.cardStyle}
+          imageRatio={config.imageRatio}
+          cardColorScheme={config.cardColorScheme}
         />
       ))}
     </div>
