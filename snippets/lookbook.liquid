@@ -1,0 +1,83 @@
+{% comment %}
+  Shared lookbook mount used by lookbook-home and lookbook-product sections.
+  Passes lookbook title/description + product handles only; React fetches product data via Storefront API.
+{% endcomment %}
+
+{{ 'component-card.css' | asset_url | stylesheet_tag }}
+{{ 'component-price.css' | asset_url | stylesheet_tag }}
+{{ 'template-collection.css' | asset_url | stylesheet_tag }}
+
+{%- style -%}
+  .section-{{ section.id }}-padding {
+    padding-top: {{ section.settings.padding_top | times: 0.75 | round: 0 }}px;
+    padding-bottom: {{ section.settings.padding_bottom | times: 0.75 | round: 0 }}px;
+  }
+
+  @media screen and (min-width: 750px) {
+    .section-{{ section.id }}-padding {
+      padding-top: {{ section.settings.padding_top }}px;
+      padding-bottom: {{ section.settings.padding_bottom }}px;
+    }
+  }
+{%- endstyle -%}
+
+{%- liquid
+  assign lookbook_mode = lookbook_mode | default: 'home'
+  assign storefront_token = settings.lookbook_storefront_token
+  assign shop_domain = shop.permanent_domain
+  assign currency_code = localization.country.currency.iso_code | default: cart.currency.iso_code
+  assign country_code = localization.country.iso_code
+-%}
+
+<div class="color-{{ section.settings.color_scheme }} gradient">
+  <div
+    class="lookbook-section page-width section-{{ section.id }}-padding isolate{% if settings.animations_reveal_on_scroll %} scroll-trigger animate--slide-in{% endif %}"
+    id="LookbookSection-{{ section.id }}"
+  >
+    {%- if section.settings.heading != blank -%}
+      <h2 class="related-products__heading inline-richtext {{ section.settings.heading_size }}">
+        {{ section.settings.heading }}
+      </h2>
+    {%- endif -%}
+
+    <div
+      data-lookbook-root
+      data-mode="{{ lookbook_mode }}"
+      data-lookbooks="{{ lookbooks_payload | escape }}"
+      data-product-handle="{{ product_handle | escape }}"
+      data-storefront-token="{{ storefront_token | escape }}"
+      data-shop-domain="{{ shop_domain | escape }}"
+      data-currency="{{ currency_code | escape }}"
+      data-country="{{ country_code | escape }}"
+      data-api-version="2025-01"
+      data-max-lookbooks="2"
+      data-columns-desktop="{{ section.settings.columns_desktop }}"
+      data-columns-mobile="{{ section.settings.columns_mobile }}"
+      data-card-style="{{ settings.card_style }}"
+      data-image-ratio="{{ section.settings.image_ratio }}"
+      data-card-color-scheme="{{ settings.card_color_scheme }}"
+    >
+      {%- if storefront_token == blank -%}
+        <p class="caption">
+          Add a Storefront API access token in Theme settings → Lookbook to load products.
+        </p>
+      {%- elsif lookbooks_payload == blank or lookbooks_payload == '[]' -%}
+        {%- if lookbook_mode == 'home' -%}
+          <p class="caption">Select a lookbook in the section settings.</p>
+        {%- endif -%}
+      {%- else -%}
+        <p class="caption">Loading lookbook…</p>
+      {%- endif -%}
+    </div>
+  </div>
+</div>
+
+<script>
+  if (!window.__lookbookAssetLoaded) {
+    window.__lookbookAssetLoaded = true;
+    var lookbookScript = document.createElement('script');
+    lookbookScript.src = {{ 'lookbook.js' | asset_url | json }};
+    lookbookScript.defer = true;
+    document.head.appendChild(lookbookScript);
+  }
+</script>

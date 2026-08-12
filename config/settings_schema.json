@@ -1466,5 +1466,20 @@
         "label": "t:settings_schema.customer_accounts.settings.customer_account_menu.label"
       }
     ]
+  },
+  {
+    "name": "Lookbook",
+    "settings": [
+      {
+        "type": "paragraph",
+        "content": "Storefront API access used by Lookbook sections to fetch product data at runtime (handles only). Create a custom app with Storefront API access and paste the public token here."
+      },
+      {
+        "type": "text",
+        "id": "lookbook_storefront_token",
+        "label": "Storefront API access token",
+        "info": "Public Storefront API token (not Admin API). Required for lookbook product cards."
+      }
+    ]
   }
 ]

@@ -3,16 +3,6 @@ import LookbookApp from './LookbookApp';
 
 /**
  * Mount React lookbooks on any Liquid section that provides a root node.
- * Expected data attributes on the mount element:
- * - data-mode: "home" | "product"
- * - data-lookbooks: JSON array of lookbook payloads (title, description, productHandles)
- * - data-product-handle: current product handle (product page)
- * - data-storefront-token: Storefront API public token
- * - data-shop-domain: shop domain (e.g. example.myshopify.com)
- * - data-currency: ISO currency code from the active market
- * - data-country: ISO country code from localization
- * - data-api-version: Storefront API version (optional)
- * - data-max-lookbooks: max lookbooks on product page (default 2)
  */
 function mountLookbooks() {
   const roots = document.querySelectorAll('[data-lookbook-root]');
@@ -30,8 +20,18 @@ function mountLookbooks() {
       country: element.dataset.country || '',
       apiVersion: element.dataset.apiVersion || '2025-01',
       maxLookbooks: Number(element.dataset.maxLookbooks || 2),
+      columnsDesktop: Number(element.dataset.columnsDesktop || 4),
+      columnsMobile: Number(element.dataset.columnsMobile || 2),
+      cardStyle: element.dataset.cardStyle || 'standard',
+      imageRatio: element.dataset.imageRatio || 'adapt',
+      cardColorScheme: element.dataset.cardColorScheme || 'scheme-2',
     };
 
+    if (!config.storefrontToken || !config.lookbooks.length) {
+      return;
+    }
+
+    element.innerHTML = '';
     const root = createRoot(element);
     root.render(<LookbookApp config={config} />);
     element.dataset.mounted = 'true';
